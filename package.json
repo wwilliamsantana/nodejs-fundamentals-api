@@ -1,0 +1,23 @@
+{
+  "name": "apinodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts  "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "fastify": "^5.3.3"
+  },
+  "devDependencies": {
+    "@rocketseat/eslint-config": "^2.2.2",
+    "@types/node": "^22.15.21",
+    "eslint": "^8.57.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
