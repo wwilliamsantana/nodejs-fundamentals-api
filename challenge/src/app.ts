@@ -3,4 +3,6 @@ import { DietDailyRoutes } from './routes/daily'
 
 export const app = fastify()
 
-app.register(DietDailyRoutes)
+app.register(DietDailyRoutes, {
+  prefix: 'diet',
+})
