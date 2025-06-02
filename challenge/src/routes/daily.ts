@@ -1,8 +1,8 @@
-import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { checkForRouteCookies } from '../middlewares/verify-cookie-routes'
+import { FastifyInstance } from 'fastify'
 
 export async function DietDailyRoutes(app: FastifyInstance) {
   app.get('/', { preHandler: checkForRouteCookies }, async (request) => {
@@ -14,6 +14,35 @@ export async function DietDailyRoutes(app: FastifyInstance) {
 
     return tables
   })
+
+  app.post(
+    '/meal',
+    { preHandler: checkForRouteCookies },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+
+      const checkMealRequestSchema = z.object({
+        name: z.string(),
+        description: z.string(),
+        this_diet: z.boolean(),
+      })
+
+      const {
+        name,
+        description,
+        this_diet: thisDiet,
+      } = checkMealRequestSchema.parse(request.body)
+
+      await knex('diets').insert({
+        user_id: sessionId,
+        name,
+        description,
+        this_diet: thisDiet,
+      })
+
+      return reply.status(201).send()
+    },
+  )
 
   app.post('/', async (request, reply) => {
     const dataUserCreateSchema = z.object({
