@@ -33,12 +33,17 @@ export async function DietDailyRoutes(app: FastifyInstance) {
         this_diet: thisDiet,
       } = checkMealRequestSchema.parse(request.body)
 
-      await knex('diets').insert({
-        user_id: sessionId,
-        name,
-        description,
-        this_diet: thisDiet,
-      })
+      const user = await knex('diets')
+        .insert({
+          id: randomUUID(),
+          user_id: sessionId,
+          name,
+          description,
+          this_diet: thisDiet,
+        })
+        .returning('*')
+
+      console.log(user)
 
       return reply.status(201).send()
     },
