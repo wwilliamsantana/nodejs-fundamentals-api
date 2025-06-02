@@ -12,9 +12,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "fastify": "^5.3.3",
     "knex": "^3.1.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "zod": "^3.25.48"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.2.2",
