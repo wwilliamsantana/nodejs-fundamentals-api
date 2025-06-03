@@ -15,6 +15,34 @@ export async function DietDailyRoutes(app: FastifyInstance) {
     return tables
   })
 
+  app.get('/meals', { preHandler: checkForRouteCookies }, async (request) => {
+    const { sessionId } = request.cookies
+
+    const meals = await knex('diets').where('user_id', sessionId).select('*')
+
+    return meals
+  })
+
+  app.get(
+    '/meals/:id',
+    { preHandler: checkForRouteCookies },
+    async (request) => {
+      const { sessionId } = request.cookies
+
+      const checkIdRequestSchema = z.object({
+        id: z.string(),
+      })
+
+      const { id } = checkIdRequestSchema.parse(request.params)
+
+      const meal = await knex('diets')
+        .where('user_id', sessionId)
+        .andWhere('id', id)
+
+      return meal
+    },
+  )
+
   app.post(
     '/meal',
     { preHandler: checkForRouteCookies },
@@ -33,7 +61,7 @@ export async function DietDailyRoutes(app: FastifyInstance) {
         this_diet: thisDiet,
       } = checkMealRequestSchema.parse(request.body)
 
-      const user = await knex('diets')
+      await knex('diets')
         .insert({
           id: randomUUID(),
           user_id: sessionId,
@@ -42,8 +70,6 @@ export async function DietDailyRoutes(app: FastifyInstance) {
           this_diet: thisDiet,
         })
         .returning('*')
-
-      console.log(user)
 
       return reply.status(201).send()
     },
