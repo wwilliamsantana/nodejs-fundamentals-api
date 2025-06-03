@@ -103,4 +103,27 @@ export async function DietDailyRoutes(app: FastifyInstance) {
 
     return reply.status(201).send()
   })
+
+  app.delete(
+    '/meals/:id',
+    { preHandler: checkForRouteCookies },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+
+      const deleetIdRequestSchema = z.object({
+        id: z.string(),
+      })
+
+      const { id } = deleetIdRequestSchema.parse(request.params)
+
+      await knex('diets')
+        .where({
+          user_id: sessionId,
+          id,
+        })
+        .del()
+
+      return reply.status(200).send()
+    },
+  )
 }
