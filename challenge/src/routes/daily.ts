@@ -44,7 +44,7 @@ export async function DietDailyRoutes(app: FastifyInstance) {
   )
 
   app.post(
-    '/meal',
+    '/meals',
     { preHandler: checkForRouteCookies },
     async (request, reply) => {
       const { sessionId } = request.cookies
@@ -104,17 +104,62 @@ export async function DietDailyRoutes(app: FastifyInstance) {
     return reply.status(201).send()
   })
 
+  app.patch(
+    '/meals/:id',
+    { preHandler: checkForRouteCookies },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+      const idMealRequestSchema = z.object({
+        id: z.string(),
+      })
+      const dataMealRequestSchema = z.object({
+        name: z.string().optional(),
+        description: z.string().optional(),
+        this_diet: z.boolean().optional(),
+      })
+
+      const { id } = idMealRequestSchema.parse(request.params)
+      const {
+        name,
+        description,
+        this_diet: thisDiet,
+      } = dataMealRequestSchema.parse(request.body)
+
+      console.log(name, description, thisDiet, id)
+
+      const user = await knex('diets')
+        .where({
+          user_id: sessionId,
+          id,
+        })
+        .first()
+
+      await knex('diets')
+        .where({
+          user_id: sessionId,
+          id,
+        })
+        .update({
+          name: name || user?.name,
+          description: description || user?.description,
+          this_diet: thisDiet || user?.this_diet,
+          update_at: String(new Date().toISOString()),
+        })
+      return reply.status(200).send()
+    },
+  )
+
   app.delete(
     '/meals/:id',
     { preHandler: checkForRouteCookies },
     async (request, reply) => {
       const { sessionId } = request.cookies
 
-      const deleetIdRequestSchema = z.object({
+      const deleteIdRequestSchema = z.object({
         id: z.string(),
       })
 
-      const { id } = deleetIdRequestSchema.parse(request.params)
+      const { id } = deleteIdRequestSchema.parse(request.params)
 
       await knex('diets')
         .where({
