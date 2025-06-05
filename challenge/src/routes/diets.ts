@@ -10,7 +10,7 @@ export async function DietsRoutes(app: FastifyInstance) {
 
     const meals = await knex('diets').where('user_id', sessionId).select('*')
 
-    return meals
+    return { meals }
   })
 
   app.get('/:id', { preHandler: checkForRouteCookies }, async (request) => {
@@ -26,7 +26,7 @@ export async function DietsRoutes(app: FastifyInstance) {
       .where('user_id', sessionId)
       .andWhere('id', id)
 
-    return meal
+    return { meal }
   })
 
   app.post(

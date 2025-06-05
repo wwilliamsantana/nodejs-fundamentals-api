@@ -12,7 +12,7 @@ export async function UserDietDailyRoutes(app: FastifyInstance) {
       .where('session_id', sessionId)
       .select('*')
 
-    return tables
+    return { tables }
   })
 
   app.post('/', async (request, reply) => {
