@@ -1,21 +1,11 @@
-import { knex } from '../database'
-import { randomUUID } from 'node:crypto'
-import { z } from 'zod'
-import { checkForRouteCookies } from '../middlewares/verify-cookie-routes'
 import { FastifyInstance } from 'fastify'
+import { checkForRouteCookies } from '../middlewares/verify-cookie-routes'
+import { knex } from '../database'
+import z from 'zod'
+import { randomUUID } from 'crypto'
 
-export async function DietDailyRoutes(app: FastifyInstance) {
+export async function DietsRoutes(app: FastifyInstance) {
   app.get('/', { preHandler: checkForRouteCookies }, async (request) => {
-    const { sessionId } = request.cookies
-
-    const tables = await knex('users')
-      .where('session_id', sessionId)
-      .select('*')
-
-    return tables
-  })
-
-  app.get('/meals', { preHandler: checkForRouteCookies }, async (request) => {
     const { sessionId } = request.cookies
 
     const meals = await knex('diets').where('user_id', sessionId).select('*')
@@ -23,28 +13,24 @@ export async function DietDailyRoutes(app: FastifyInstance) {
     return meals
   })
 
-  app.get(
-    '/meals/:id',
-    { preHandler: checkForRouteCookies },
-    async (request) => {
-      const { sessionId } = request.cookies
+  app.get('/:id', { preHandler: checkForRouteCookies }, async (request) => {
+    const { sessionId } = request.cookies
 
-      const checkIdRequestSchema = z.object({
-        id: z.string(),
-      })
+    const checkIdRequestSchema = z.object({
+      id: z.string().uuid(),
+    })
 
-      const { id } = checkIdRequestSchema.parse(request.params)
+    const { id } = checkIdRequestSchema.parse(request.params)
 
-      const meal = await knex('diets')
-        .where('user_id', sessionId)
-        .andWhere('id', id)
+    const meal = await knex('diets')
+      .where('user_id', sessionId)
+      .andWhere('id', id)
 
-      return meal
-    },
-  )
+    return meal
+  })
 
   app.post(
-    '/meals',
+    '/',
     { preHandler: checkForRouteCookies },
     async (request, reply) => {
       const { sessionId } = request.cookies
@@ -75,42 +61,13 @@ export async function DietDailyRoutes(app: FastifyInstance) {
     },
   )
 
-  app.post('/', async (request, reply) => {
-    const dataUserCreateSchema = z.object({
-      name: z.string(),
-      age: z.number(),
-    })
-
-    const { name, age } = dataUserCreateSchema.parse(request.body)
-
-    let sessionId = request.cookies.sessionId
-
-    if (!sessionId) {
-      sessionId = randomUUID()
-
-      reply.setCookie('sessionId', sessionId, {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-    }
-
-    await knex('users').insert({
-      id: randomUUID(),
-      name,
-      age,
-      session_id: sessionId,
-    })
-
-    return reply.status(201).send()
-  })
-
   app.patch(
-    '/meals/:id',
+    '/:id',
     { preHandler: checkForRouteCookies },
     async (request, reply) => {
       const { sessionId } = request.cookies
       const idMealRequestSchema = z.object({
-        id: z.string(),
+        id: z.string().uuid(),
       })
       const dataMealRequestSchema = z.object({
         name: z.string().optional(),
@@ -150,13 +107,13 @@ export async function DietDailyRoutes(app: FastifyInstance) {
   )
 
   app.delete(
-    '/meals/:id',
+    '/:id',
     { preHandler: checkForRouteCookies },
     async (request, reply) => {
       const { sessionId } = request.cookies
 
       const deleteIdRequestSchema = z.object({
-        id: z.string(),
+        id: z.string().uuid(),
       })
 
       const { id } = deleteIdRequestSchema.parse(request.params)
