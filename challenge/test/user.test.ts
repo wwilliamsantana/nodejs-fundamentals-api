@@ -56,4 +56,48 @@ describe('User routes', () => {
       }),
     ])
   })
+
+  test('List metrics', async () => {
+    const userResponse = await request(app.server)
+      .post('/diet')
+      .send({
+        name: 'William',
+        age: 25,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/diet/meals')
+      .send({
+        name: 'Sushi',
+        description: 'Low Carbo',
+        this_diet: true,
+      })
+      .set('Cookie', userResponse.get('Set-Cookie') || [])
+      .expect(201)
+
+    await request(app.server)
+      .post('/diet/meals')
+      .send({
+        name: 'Lasagna',
+        description: 'High carbo',
+        this_diet: false,
+      })
+      .set('Cookie', userResponse.get('Set-Cookie') || [])
+      .expect(201)
+
+    const metricsResponse = await request(app.server)
+      .get('/diet/metrics')
+      .set('Cookie', userResponse.get('Set-Cookie') || [])
+      .expect(200)
+
+    console.log(metricsResponse.body)
+
+    expect(metricsResponse.body).toEqual({
+      qtdMeals: 2,
+      qtdDietsIn: 1,
+      qtdDietsOut: 1,
+      bestSequence: 1,
+    })
+  })
 })
