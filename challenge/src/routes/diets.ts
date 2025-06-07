@@ -25,8 +25,9 @@ export async function DietsRoutes(app: FastifyInstance) {
     const meal = await knex('diets')
       .where('user_id', sessionId)
       .andWhere('id', id)
+      .first()
 
-    return { meal }
+    return meal
   })
 
   app.post(
