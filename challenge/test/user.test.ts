@@ -12,19 +12,25 @@ describe('User routes', () => {
     await app.close()
   })
 
-  beforeEach(async () => {
+  beforeEach(() => {
     execSync('npm run knex migrate:rollback --all')
     execSync('npm run knex migrate:latest')
   })
 
   test('Creating of a user', async () => {
-    await request(app.server)
+    const response = await request(app.server)
       .post('/diet')
       .send({
         name: 'William',
         age: 25,
       })
       .expect(201)
+
+    const cookies = response.get('Set-Cookie')
+
+    expect(cookies).toEqual(
+      expect.arrayContaining([expect.stringContaining('sessionId')]),
+    )
   })
 
   test('List all users', async () => {
