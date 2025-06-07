@@ -19,7 +19,7 @@ describe('User routes', () => {
 
   test('Creating of a user', async () => {
     const response = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'William',
         age: 25,
@@ -35,7 +35,7 @@ describe('User routes', () => {
 
   test('List all users', async () => {
     const createUserResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'William',
         age: 25,
@@ -45,7 +45,7 @@ describe('User routes', () => {
     const cookies = createUserResponse.get('Set-Cookie') || []
 
     const getUserListResponse = await request(app.server)
-      .get('/diet')
+      .get('/users')
       .set('Cookie', cookies)
       .expect(200)
 
@@ -59,7 +59,7 @@ describe('User routes', () => {
 
   test('List metrics', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'William',
         age: 25,
@@ -67,7 +67,7 @@ describe('User routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Sushi',
         description: 'Low Carbo',
@@ -77,7 +77,7 @@ describe('User routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Lasagna',
         description: 'High carbo',
@@ -87,11 +87,9 @@ describe('User routes', () => {
       .expect(201)
 
     const metricsResponse = await request(app.server)
-      .get('/diet/metrics')
+      .get('/users/metrics')
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
-
-    console.log(metricsResponse.body)
 
     expect(metricsResponse.body).toEqual({
       qtdMeals: 2,

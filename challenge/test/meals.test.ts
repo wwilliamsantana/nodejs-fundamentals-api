@@ -19,12 +19,12 @@ describe('Meals routes', () => {
 
   test('Create new meal', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({ name: 'William', age: 25 })
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Sushi',
         description: 'Low Carbo',
@@ -36,12 +36,12 @@ describe('Meals routes', () => {
 
   test('List all meals', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({ name: 'Joe', age: 25 })
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Breakfast',
         description: "It's Breakfast",
@@ -51,7 +51,7 @@ describe('Meals routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Dinner',
         description: "It's Dinner",
@@ -61,7 +61,7 @@ describe('Meals routes', () => {
       .expect(201)
 
     const mealsResponse = await request(app.server)
-      .get('/diet/meals')
+      .get('/users/meals')
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
 
@@ -73,7 +73,7 @@ describe('Meals routes', () => {
 
   test('Return of just one meal', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'Marcos',
         age: 25,
@@ -81,7 +81,7 @@ describe('Meals routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Breakfast',
         description: "It's Breakfast",
@@ -91,14 +91,14 @@ describe('Meals routes', () => {
       .expect(201)
 
     const mealsResponse = await request(app.server)
-      .get('/diet/meals')
+      .get('/users/meals')
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
 
     const mealId = mealsResponse.body.meals[0].id
 
     const mealResponse = await request(app.server)
-      .get(`/diet/meals/${mealId}`)
+      .get(`/users/meals/${mealId}`)
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
 
@@ -113,7 +113,7 @@ describe('Meals routes', () => {
 
   test('Update of one meal', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'Joe',
         age: 25,
@@ -121,7 +121,7 @@ describe('Meals routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Breakfast',
         description: "It's Breakfast",
@@ -131,14 +131,14 @@ describe('Meals routes', () => {
       .expect(201)
 
     const mealsResponse = await request(app.server)
-      .get('/diet/meals')
+      .get('/users/meals')
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
 
     const mealId = mealsResponse.body.meals[0].id
 
     await request(app.server)
-      .patch(`/diet/meals/${mealId}`)
+      .patch(`/users/meals/${mealId}`)
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .send({
         name: 'Dinner',
@@ -149,7 +149,7 @@ describe('Meals routes', () => {
 
   test('Delete meal', async () => {
     const userResponse = await request(app.server)
-      .post('/diet')
+      .post('/users')
       .send({
         name: 'Joe',
         age: 25,
@@ -157,7 +157,7 @@ describe('Meals routes', () => {
       .expect(201)
 
     await request(app.server)
-      .post('/diet/meals')
+      .post('/users/meals')
       .send({
         name: 'Breakfast',
         description: "It's Breakfast",
@@ -167,14 +167,14 @@ describe('Meals routes', () => {
       .expect(201)
 
     const mealsResponse = await request(app.server)
-      .get('/diet/meals')
+      .get('/users/meals')
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
 
     const mealId = mealsResponse.body.meals[0].id
 
     await request(app.server)
-      .delete(`/diet/meals/${mealId}`)
+      .delete(`/users/meals/${mealId}`)
       .set('Cookie', userResponse.get('Set-Cookie') || [])
       .expect(200)
   })

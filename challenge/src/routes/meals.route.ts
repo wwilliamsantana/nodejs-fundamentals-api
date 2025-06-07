@@ -4,7 +4,7 @@ import { knex } from '../database'
 import z from 'zod'
 import { randomUUID } from 'crypto'
 
-export async function DietsRoutes(app: FastifyInstance) {
+export async function MealsRoutes(app: FastifyInstance) {
   app.get('/', { preHandler: checkForRouteCookies }, async (request) => {
     const { sessionId } = request.cookies
 

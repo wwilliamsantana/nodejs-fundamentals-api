@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { checkForRouteCookies } from '../middlewares/verify-cookie-routes'
 import { FastifyInstance } from 'fastify'
 
-export async function UserDietDailyRoutes(app: FastifyInstance) {
+export async function UsersRoutes(app: FastifyInstance) {
   app.get('/', { preHandler: checkForRouteCookies }, async (request) => {
     const { sessionId } = request.cookies
 
